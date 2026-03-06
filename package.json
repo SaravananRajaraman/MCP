@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "start": "node main.js",
-    "server": "node mcp_server.js"
+    "server": "node mcp_server.js",
+    "inspect": "npx @modelcontextprotocol/inspector node mcp_server.js"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
