@@ -1,0 +1,16 @@
+{
+  "name": "mcp-chat",
+  "version": "0.1.0",
+  "description": "MCP Chat - Node.js CLI chat app with Anthropic and MCP",
+  "type": "module",
+  "scripts": {
+    "start": "node main.js",
+    "server": "node mcp_server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.39.0",
+    "@modelcontextprotocol/sdk": "^1.10.0",
+    "dotenv": "^16.4.0",
+    "zod": "^3.23.0"
+  }
+}

@@ -1,111 +1,102 @@
-# MCP Chat
+# MCP Chat (Node.js)
 
-MCP Chat is a command-line interface application that enables interactive chat capabilities with AI models through the Anthropic API. The application supports document retrieval, command-based prompts, and extensible tool integrations via the MCP (Model Control Protocol) architecture.
+A Node.js port of the MCP Chat CLI app. Interactive terminal chat with Claude, backed by an MCP server for document retrieval, tools, and prompts.
 
 ## Prerequisites
 
-- Python 3.9+
-- Anthropic API Key
+- Node.js 18+
+- An Anthropic API key
 
 ## Setup
 
-### Step 1: Configure the environment variables
-
-1. Create or edit the `.env` file in the project root and verify that the following variables are set correctly:
-
-```
-ANTHROPIC_API_KEY=""  # Enter your Anthropic API secret key
-```
-
-### Step 2: Install dependencies
-
-#### Option 1: Setup with uv (Recommended)
-
-[uv](https://github.com/astral-sh/uv) is a fast Python package installer and resolver.
-
-1. Install uv, if not already installed:
+### 1. Install dependencies
 
 ```bash
-pip install uv
+npm install
 ```
 
-2. Create and activate a virtual environment:
+### 2. Configure environment variables
 
 ```bash
-uv venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+cp .env.example .env
 ```
 
-3. Install dependencies:
+Edit `.env` and fill in your values:
 
-```bash
-uv pip install -e .
+```
+ANTHROPIC_API_KEY="sk-ant-..."
+CLAUDE_MODEL="claude-sonnet-4-20250514"
 ```
 
-4. Run the project
+### 3. Run
 
 ```bash
-uv run main.py
+npm start
+# or
+node main.js
 ```
 
-#### Option 2: Setup without uv
-
-1. Create and activate a virtual environment:
+To attach additional MCP servers:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate  # On Windows: .venv\Scripts\activate
-```
-
-2. Install dependencies:
-
-```bash
-pip install anthropic python-dotenv prompt-toolkit "mcp[cli]==1.8.0"
-```
-
-3. Run the project
-
-```bash
-python main.py
+node main.js my_other_server.js
 ```
 
 ## Usage
 
-### Basic Interaction
+### Basic chat
 
-Simply type your message and press Enter to chat with the model.
+Just type your message and press Enter.
 
-### Document Retrieval
+### Document mentions (`@`)
 
-Use the @ symbol followed by a document ID to include document content in your query:
+Reference a document inline to inject its content into the prompt:
 
 ```
 > Tell me about @deposition.md
 ```
 
-### Commands
+Press **Tab** after `@` to autocomplete document IDs.
 
-Use the / prefix to execute commands defined in the MCP server:
+### Commands (`/`)
+
+Run an MCP prompt against a document:
 
 ```
-> /summarize deposition.md
+> /format report.pdf
+> /summarize financials.docx
 ```
 
-Commands will auto-complete when you press Tab.
+Press **Tab** after `/` to autocomplete the command name, then press **Tab** again to autocomplete the document ID.
 
-## Development
+## Project structure
 
-### Adding New Documents
+```
+.
+├── main.js              # Entry point
+├── mcp_server.js        # MCP server (tools, resources, prompts)
+├── mcp_client.js        # MCP client wrapper
+├── core/
+│   ├── claude.js        # Anthropic API wrapper
+│   ├── tools.js         # Tool execution manager
+│   ├── chat.js          # Base chat loop
+│   ├── cli_chat.js      # CLI-specific chat (doc mentions, commands)
+│   └── cli.js           # readline CLI with tab autocomplete
+├── package.json
+└── .env.example
+```
 
-Edit the `mcp_server.py` file to add new documents to the `docs` dictionary.
+## Adding documents
 
-### Implementing MCP Features
+Edit the `docs` object in `mcp_server.js`:
 
-To fully implement the MCP features:
+```js
+const docs = {
+  "my-doc.md": "Content of my document.",
+  // ...
+};
+```
 
-1. Complete the TODOs in `mcp_server.py`
-2. Implement the missing functionality in `mcp_client.py`
+## Adding MCP tools / prompts / resources
 
-### Linting and Typing Check
-
-There are no lint or type checks implemented.
+Everything is in `mcp_server.js`. Use `server.tool()`, `server.prompt()`, and `server.resource()` from the `@modelcontextprotocol/sdk`.
